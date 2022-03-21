@@ -21,8 +21,8 @@ export default {
         '/product': {
             post: {
                 tags: ['product'],
-                summary: 'Adding new product',
-                description: '',
+                summary: 'Add new product',
+                description: 'Create new Product',
                 operationId: 'createProduct',
                 consumes: ['application/json'],
                 produces: ['application/json'],
@@ -41,6 +41,32 @@ export default {
                         schema: {
                             type: 'object',
                             $ref: '#/definitions/ProductResponse'
+                        }
+                    },
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    }
+                }
+            },
+            get: {
+                tags: ['product'],
+                summary: 'Get All Products',
+                description: 'Returns all products',
+                operationId: 'getAllProducts',
+                produces: ['application/json'],
+                parameters: [],
+                responses: {
+                    200: {
+                        description: 'Success - Returns product info',
+                        schema: {
+                            type: 'array',
+                            items: {
+                                $ref: '#/definitions/FullProduct'
+                            }
                         }
                     },
                     400: {
@@ -126,6 +152,149 @@ export default {
                         }
                     }
                 }
+            },
+            put: {
+                tags: ['product'],
+                summary: 'Update existing product',
+                description: 'This call will update all field on product',
+                operationId: 'updateProductById',
+                consumes: ['application/json'],
+                produces: ['application/json'],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        description: 'ID of product to update',
+                        required: true,
+                        schema: {
+                            type: 'integer',
+                            format: 'int32'
+                        }
+                    },
+                    {
+                        in: 'body',
+                        name: 'body',
+                        description: 'Product update description',
+                        required: true,
+                        schema: {
+                            $ref: '#/definitions/Product'
+                        }
+                    }],
+                responses: {
+                    200: {
+                        description: 'Success - Product updated',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/ProductResponse'
+                        }
+                    },
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    },
+                    404 : {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    }
+                }
+            },
+            patch: {
+                tags: ['product'],
+                summary: 'Patch quantity and/or price for existing product',
+                description: 'This call will update quantity and/or price on product',
+                operationId: 'patchProductById',
+                consumes: ['application/x-www-form-urlencoded'],
+                produces: ['application/json'],
+                parameters: [
+                    {
+                        name: 'id',
+                        in: 'path',
+                        description: 'ID of product to update',
+                        required: true,
+                        schema: {
+                            type: 'integer',
+                            format: 'int32'
+                        }
+                    },
+                    {
+                        name: 'quantity',
+                        in: 'formData',
+                        description: 'Updated product quantity',
+                        required: false,
+                        type: 'integer',
+                        format: 'int32'
+                    },
+                    {
+                        name: 'price',
+                        in: 'formData',
+                        description: 'Updated product price',
+                        required: false,
+                        type: 'number',
+                        format: 'double'
+                    }],
+                responses: {
+                    200: {
+                        description: 'Success - Product updated',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/ProductResponse'
+                        }
+                    },
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    },
+                    404 : {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    }
+                }
+            }
+        },
+        '/product/search': {
+            get: {
+                tags: ['product'],
+                summary: 'Get Products by Product name',
+                description: 'Returns products by it name',
+                operationId: 'searchByProductName',
+                produces: ['application/json'],
+                parameters: [{
+                    name: 'name',
+                    in: 'query',
+                    description: 'Product name',
+                    required: true,
+                    type: 'string',
+                }],
+                responses: {
+                    200: {
+                        description: 'Success - Returns product info',
+                        schema: {
+                            type: 'array',
+                            items: {
+                                $ref: '#/definitions/FullProduct'
+                            }
+                        }
+                    },
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    }
+                }
             }
         }
     },
@@ -139,29 +308,37 @@ export default {
                     example: 'Cane Sugar'
                 },
                 quantity: {
-                    type: 'string',
-                    example: '12'
+                    type: 'integer',
+                    format:'int32',
+                    example: 12
                 },
                 price: {
-                    type: 'string',
-                    example: '2.12'
+                    type: 'number',
+                    format: 'double',
+                    example: 2.12
                 },
             }
         },
         FullProduct: {
             type: 'object',
             properties: {
+                id: {
+                    type: 'integer',
+                    example: 5
+                },
                 product_name: {
                     type: 'string',
                     example: 'Cane Sugar'
                 },
                 quantity: {
-                    type: 'string',
-                    example: '12'
+                    type: 'integer',
+                    format:'int32',
+                    example: 12
                 },
                 price: {
-                    type: 'string',
-                    example: '2.12'
+                    type: 'number',
+                    format: 'double',
+                    example: 2.12
                 },
             }
         },
@@ -186,10 +363,12 @@ export default {
                         },
                         quantity: {
                             type: 'integer',
-                            format: 'int32',
+                            format:'int32',
+                            example: 12
                         },
                         price: {
-                            type: 'double',
+                            type: 'number',
+                            format: 'double',
                             example: 2.12
                         },
                     }
