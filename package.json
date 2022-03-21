@@ -1,0 +1,41 @@
+{
+  "name": "store-learn-api-testing",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon",
+    "lint": "eslint --ext .js,.html -f ./node_modules/eslint-friendly-formatter . --fix",
+    "prepush": "npm run lint",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/baur100/store.git"
+  },
+  "keywords": [],
+  "author": "Baurzhan Dosym",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/baur100/store/issues"
+  },
+  "homepage": "https://github.com/baur100/store#readme",
+  "devDependencies": {
+    "eslint": "^8.11.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.4",
+    "husky": "^7.0.4",
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "eslint-friendly-formatter": "^3.0.0",
+    "express": "^4.17.3",
+    "express-promise-router": "^4.1.1",
+    "pg": "^8.7.3",
+    "swagger-ui-express": "^4.3.0",
+    "url": "^0.11.0"
+  }
+}
