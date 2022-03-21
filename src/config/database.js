@@ -16,7 +16,6 @@
 //     query: (text, params) => client.query(text, params)
 // };
 //
-
 import pg from 'pg';
 import dotenv  from 'dotenv';
 
