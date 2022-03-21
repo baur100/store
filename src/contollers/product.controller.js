@@ -60,4 +60,79 @@ const getProductById = async (req, res) => {
     return res.status(200).json(rows[0]);
 };
 
-export default {createProduct, getProductById};
+/**
+ * Delete Product by product id
+ *
+ * @param {object} req  - request
+ * @param {object} req.param - request path params
+ * @param {string} req.param.id - product id - should be number
+ * @param {object} res - response object
+ * @returns {Promise<*>}
+ */
+const deleteProductById = async (req, res) => {
+    const productId = parseInt(req.params.id);
+    if (isNaN(productId)){
+        return res.status(400).json({error: 'Wrong id - should be number'})
+    }
+    const {rowCount} = await db.query(
+        'delete from products where productid = $1',
+        [productId]
+    );
+
+    if (rowCount === 0){
+        return res.status(404).json({error: `Product with id ${productId} not found`});
+    }
+    return res.status(200).json({message: `Product with id ${productId} has been deleted`});
+};
+
+/**
+ * Delete Product by product id
+ *
+ * @param {object} req  - request
+ * @param {object} req.param - request path params
+ * @param {string} req.param.id - product id - should be number
+ * @param {object} res - response object
+ * @returns {Promise<*>}
+ */
+const patchProductById = async (req, res) => {
+    const productId = parseInt(req.params.id);
+    if (isNaN(productId)){
+        return res.status(400).json({error: 'Wrong id - should be number'})
+    }
+    const {rowCount} = await db.query(
+        'delete from products where productid = $1',
+        [productId]
+    );
+
+    if (rowCount === 0){
+        return res.status(404).json({error: `Product with id ${productId} not found`});
+    }
+    return res.status(200).json({message: `Product with id ${productId} has been deleted`});
+};
+
+/**
+ * Delete Product by product id
+ *
+ * @param {object} req  - request
+ * @param {object} req.param - request path params
+ * @param {string} req.param.id - product id - should be number
+ * @param {object} res - response object
+ * @returns {Promise<*>}
+ */
+const updateProductById = async (req, res) => {
+    const productId = parseInt(req.params.id);
+    if (isNaN(productId)){
+        return res.status(400).json({error: 'Wrong id - should be number'})
+    }
+    const {rowCount} = await db.query(
+        'delete from products where productid = $1',
+        [productId]
+    );
+
+    if (rowCount === 0){
+        return res.status(404).json({error: `Product with id ${productId} not found`});
+    }
+    return res.status(200).json({message: `Product with id ${productId} has been deleted`});
+};
+
+export default {createProduct, getProductById, deleteProductById, patchProductById,updateProductById};

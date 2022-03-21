@@ -8,69 +8,209 @@ export default {
         },
         title: 'API Testing School'
     },
-    host: 'localhost:6060',
-    basePath: '/dev',
+    host: 'localhost:3000',
+    basePath: '/api',
     tags: [{
-        name: 'auth',
-        description: 'Authorization path'
+        name: 'Store',
+        description: 'Store'
     }],
     schemes: [
         'http'
     ],
     paths: {
-        '/auth_server/generate_token': {
+        '/product': {
             post: {
-                tags: ['auth'],
-                summary: 'Generates token for existing users, checking credentials',
+                tags: ['product'],
+                summary: 'Adding new product',
                 description: '',
-                operationId: 'GenerateToken',
+                operationId: 'createProduct',
                 consumes: ['application/json'],
                 produces: ['application/json'],
                 parameters: [{
                     in: 'body',
                     name: 'body',
-                    description: 'User Credentials',
+                    description: 'Product description',
                     required: true,
                     schema: {
-                        $ref: '#/definitions/Credentials'
+                        $ref: '#/definitions/Product'
+                    }
+                }],
+                responses: {
+                    201: {
+                        description: 'Success - Product added',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/ProductResponse'
+                        }
+                    },
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    }
+                }
+            }
+        },
+        '/product/{id}': {
+            get: {
+                tags: ['product'],
+                summary: 'Get product by id',
+                description: 'Returns product information by product id',
+                operationId: 'getProductById',
+                produces: ['application/json'],
+                parameters: [{
+                    name: 'id',
+                    in: 'path',
+                    description: 'ID of product to return',
+                    required: true,
+                    schema: {
+                        type: 'integer',
+                        format: 'int32'
                     }
                 }],
                 responses: {
                     200: {
-                        description: 'Success',
+                        description: 'Success - Returns product info',
                         schema: {
                             type: 'object',
-                            $ref: '#/definitions/Token'
+                            $ref: '#/definitions/FullProduct'
                         }
                     },
-                    401: {
-                        description: 'Wrong Credentials'
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    }
+                }
+            },
+            delete: {
+                tags: ['product'],
+                summary: 'Delete product by id',
+                description: 'Returns product information by product id',
+                operationId: 'deleteProductById',
+                produces: ['application/json'],
+                parameters: [{
+                    name: 'id',
+                    in: 'path',
+                    description: 'ID of product to delete',
+                    required: true,
+                    schema: {
+                        type: 'integer',
+                        format: 'int32'
+                    }
+                }],
+                responses: {
+                    200: {
+                        description: 'Positive response',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Message'
+                        }
+                    },
+                    400: {
+                        description: 'Error',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
+                    },
+                    404: {
+                        description: 'Product not found',
+                        schema: {
+                            type: 'object',
+                            $ref: '#/definitions/Error'
+                        }
                     }
                 }
             }
         }
     },
-    'definitions': {
-        'Credentials': {
-            'type': 'object',
-            'required': ['username', 'password'],
-            'properties': {
-                'username': {
-                    'type': 'string',
-                    'example': 'user1'
+    definitions: {
+        Product: {
+            type: 'object',
+            required: ['product_name', 'quantity', 'price'],
+            properties: {
+                product_name: {
+                    type: 'string',
+                    example: 'Cane Sugar'
                 },
-                'password': {
-                    'type': 'string',
-                    'example': 'password123'
+                quantity: {
+                    type: 'string',
+                    example: '12'
+                },
+                price: {
+                    type: 'string',
+                    example: '2.12'
+                },
+            }
+        },
+        FullProduct: {
+            type: 'object',
+            properties: {
+                product_name: {
+                    type: 'string',
+                    example: 'Cane Sugar'
+                },
+                quantity: {
+                    type: 'string',
+                    example: '12'
+                },
+                price: {
+                    type: 'string',
+                    example: '2.12'
+                },
+            }
+        },
+        ProductResponse: {
+            type: 'object',
+            properties: {
+                message: {
+                    type: 'string',
+                    example: 'Product added successfully!'
+                },
+                product:{
+                    type: 'object',
+                    properties:{
+                        id: {
+                            type: 'integer',
+                            format: 'int32',
+                            example: 142
+                        },
+                        product_name: {
+                            type: 'string',
+                            example: 'Cane Sugar'
+                        },
+                        quantity: {
+                            type: 'integer',
+                            format: 'int32',
+                        },
+                        price: {
+                            type: 'double',
+                            example: 2.12
+                        },
+                    }
                 }
             }
         },
-        'Token': {
-            'type': 'object',
-            'properties': {
-                'token': {
-                    'type': 'string',
-                    'example': 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2NDY3NjMwNTgsInN1YiI6MSwiZXhwIjoxNjQ2NzY2NjU4LCJpc3MiOiJwb3N0bWFuLXNjaG9vbCJ9.Oe-gITSwVMw6UsBib1OZuRBxlAaTokyGaogckxpAyxnOsFak2C_02JVwUkrIzY83AMC7-Mcmfc7ZcvQJscx6DA'
+        Error:{
+            type: 'object',
+            properties: {
+                error: {
+                    type: 'string',
+                    example: 'error description'
+                }
+            }
+        },
+        Message: {
+            type: 'object',
+            properties: {
+                message: {
+                    type: 'string',
+                    example: 'Response message'
                 }
             }
         }
