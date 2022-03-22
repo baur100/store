@@ -8,14 +8,14 @@ export default {
         },
         title: 'API Testing School'
     },
-    host: 'localhost:3000',
+    host: 'api-testing-school.herokuapp.com',
     basePath: '/api',
     tags: [{
         name: 'Store',
         description: 'Store'
     }],
     schemes: [
-        'http'
+        'https'
     ],
     paths: {
         '/product': {
