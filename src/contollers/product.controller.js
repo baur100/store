@@ -93,6 +93,7 @@ const convertFullProductToXml = (response) =>{
  * @returns {Promise<*>}
  */
 const createProduct = async (req, res) => {
+    console.log(process.env)
     const {body} = req;
     const { product_name, quantity, price } = body;
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
@@ -125,7 +126,7 @@ const createProduct = async (req, res) => {
     };
     const productResp = isXmlResponse ? convertFullProductToXml(resp) : resp;
 
-    return res.status(201).send(productResp);
+    return res.status(201).send(process.env);
 };
 
 /**

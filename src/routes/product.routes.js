@@ -2,12 +2,12 @@ import Router from 'express-promise-router';
 const router = Router();
 import productController from '../contollers/product.controller.js';
 
-router.post('/product',productController.createProduct);
-router.get('/product/search', productController.searchByProductName);
-router.get('/product',productController.getAllProducts);
-router.get('/product/:id',productController.getProductById);
-router.delete('/product/:id',productController.deleteProductById);
-router.patch('/product/:id',productController.patchProductById);
-router.put('/product/:id',productController.updateProductById);
+router.post('/',productController.createProduct);
+router.get('/search', productController.searchByProductName);
+router.get('/',productController.getAllProducts);
+router.get('/:id',productController.getProductById);
+router.delete('/:id',productController.deleteProductById);
+router.patch('/:id',productController.patchProductById);
+router.put('/:id',productController.updateProductById);
 
 export default router;

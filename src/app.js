@@ -20,7 +20,7 @@ routes.get('/', (req, res)=>{
     res.sendFile('index.html', { root: path.join(__dirname, './') });
 });
 
-app.use('/api', productRoute);
+app.use('/api/product', productRoute);
 
 // Error handling
 app.use((req, res) => {
