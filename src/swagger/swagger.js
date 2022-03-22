@@ -25,7 +25,7 @@ export default {
                 description: 'Create new Product',
                 operationId: 'createProduct',
                 consumes: ['application/json'],
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [{
                     in: 'body',
                     name: 'body',
@@ -57,7 +57,7 @@ export default {
                 summary: 'Get All Products',
                 description: 'Returns all products',
                 operationId: 'getAllProducts',
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [],
                 responses: {
                     200: {
@@ -85,7 +85,7 @@ export default {
                 summary: 'Get product by id',
                 description: 'Returns product information by product id',
                 operationId: 'getProductById',
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [{
                     name: 'id',
                     in: 'path',
@@ -118,7 +118,7 @@ export default {
                 summary: 'Delete product by id',
                 description: 'Returns product information by product id',
                 operationId: 'deleteProductById',
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [{
                     name: 'id',
                     in: 'path',
@@ -159,7 +159,7 @@ export default {
                 description: 'This call will update all field on product',
                 operationId: 'updateProductById',
                 consumes: ['application/json'],
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [
                     {
                         name: 'id',
@@ -210,7 +210,7 @@ export default {
                 description: 'This call will update quantity and/or price on product',
                 operationId: 'patchProductById',
                 consumes: ['application/x-www-form-urlencoded'],
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [
                     {
                         name: 'id',
@@ -269,7 +269,7 @@ export default {
                 summary: 'Get Products by Product name',
                 description: 'Returns products by it name',
                 operationId: 'searchByProductName',
-                produces: ['application/json'],
+                produces: ['application/json', 'application/xml'],
                 parameters: [{
                     name: 'name',
                     in: 'query',

@@ -12,7 +12,6 @@ const convertArrayToXml = (products) => {
     const finalObj = builder.buildObject(frame);
     return finalObj.replace('stuff',xml);
 };
-
 const objectArrayToXml = (obj) => {
     let xml = '';
     for (let prop in obj) {
@@ -61,7 +60,6 @@ const convertOutput = (rows) => {
         };
     });
 };
-
 const convertProductToXml = (product) =>{
     const obj = {product};
     const builder = new parser.Builder();
@@ -247,7 +245,7 @@ const patchProductById = async (req, res) => {
     }
 
     if(reqPrice !== undefined) {
-        price = Number(reqPrice);
+        price = Number(reqPrice).toFixed(2);
         if (isNaN(price)){
             resp = {error: 'Wrong price - should be number'};
             error = isXmlResponse ? convertErrorToXml(resp) : resp;
@@ -276,7 +274,7 @@ const patchProductById = async (req, res) => {
         product: {
             productId,
             quantity,
-            price: price.toFixed(2),
+            price,
         },
     };
     const productResp = isXmlResponse ? convertFullProductToXml(resp) :resp;
@@ -362,7 +360,7 @@ const searchByProductName = async (req, res) => {
         [name]
     );
     if(rows.length===0) {
-        resp = {error: `Product with name =  ${name}} not found`};
+        resp = {error: `Product with name =  ${name} not found`};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(404).send(error);
     }
