@@ -6,12 +6,12 @@ let resp;
 let message;
 
 const convertArrayToXml = (products) => {
-    const xml = objectArrayToXml(products)
-    const frame = {products: 'stuff'}
-    const builder =new  parser.Builder()
-    const finalObj = builder.buildObject(frame)
-    return finalObj.replace('stuff',xml)
-}
+    const xml = objectArrayToXml(products);
+    const frame = {products: 'stuff'};
+    const builder =new  parser.Builder();
+    const finalObj = builder.buildObject(frame);
+    return finalObj.replace('stuff',xml);
+};
 
 const objectArrayToXml = (obj) => {
     let xml = '';
@@ -21,20 +21,20 @@ const objectArrayToXml = (obj) => {
         }
         if (obj[prop] === undefined)
             continue;
-        let tag
+        let tag;
         if(!isNaN(prop)){
-            tag = 'product'
+            tag = 'product';
         } else {
-            tag= prop
+            tag= prop;
         }
-        xml += "<" + tag + ">";
+        xml += '<' + tag + '>';
 
-        if (typeof obj[prop] == "object") {
+        if (typeof obj[prop] == 'object') {
             if (obj[prop].constructor === Array) {
                 for (var i = 0; i < obj[prop].length; i++) {
                     xml += '<item>';
                     xml += objectArrayToXml(new Object(obj[prop][i]));
-                    xml += "</item>";
+                    xml += '</item>';
                 }
             } else {
                 xml += objectArrayToXml(new Object(obj[prop]));
@@ -43,14 +43,14 @@ const objectArrayToXml = (obj) => {
             xml += obj[prop];
         }
         if(!isNaN(prop)){
-            tag = 'product'
+            tag = 'product';
         } else {
-            tag= prop
+            tag= prop;
         }
-        xml += "</" + tag + ">";
+        xml += '</' + tag + '>';
     }
     return xml;
-}
+};
 const convertOutput = (rows) => {
     return rows.map((product)=>{
         return {
@@ -113,7 +113,7 @@ const createProduct = async (req, res) => {
         rows = dbResponse.rows;
     } catch (err) {
         resp = {error: err.detail};
-        error = isXmlResponse ? convertErrorToXml(resp) : resp
+        error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(400).send(error);
     }
     resp = {
@@ -125,7 +125,7 @@ const createProduct = async (req, res) => {
             price:price.toFixed(2),
         },
     };
-    const productResp = isXmlResponse ? convertFullProductToXml(resp) : resp
+    const productResp = isXmlResponse ? convertFullProductToXml(resp) : resp;
 
     return res.status(201).send(productResp);
 };
@@ -154,7 +154,7 @@ const getProductById = async (req, res) => {
     );
     if(rows.length===0) {
         resp = {message: `Product with id ${productId} not found`};
-        error = isXmlResponse ? convertErrorToXml(resp) : resp
+        error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(404).send(error);
     }
 
@@ -278,7 +278,7 @@ const patchProductById = async (req, res) => {
             quantity,
             price: price.toFixed(2),
         },
-    }
+    };
     const productResp = isXmlResponse ? convertFullProductToXml(resp) :resp;
     return res.status(200).send(productResp);
 };
