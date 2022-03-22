@@ -8,14 +8,14 @@ export default {
         },
         title: 'API Testing School'
     },
-    host: 'api-testing-school.herokuapp.com',
+    host: process.env.HOST,
     basePath: '/api',
     tags: [{
         name: 'Store',
         description: 'Store'
     }],
     schemes: [
-        'https'
+        process.env.SCHEME
     ],
     paths: {
         '/product': {

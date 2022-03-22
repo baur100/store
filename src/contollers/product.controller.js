@@ -126,7 +126,7 @@ const createProduct = async (req, res) => {
     };
     const productResp = isXmlResponse ? convertFullProductToXml(resp) : resp;
 
-    return res.status(201).send(process.env);
+    return res.status(201).send(productResp);
 };
 
 /**
