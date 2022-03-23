@@ -1,35 +1,79 @@
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import { KJUR } from 'jsrsasign';
 import db from '../config/database.js';
 
+const createToken = (opts, privateKey) => {
+    const iss = process.env.SCHEME+'://'+process.env.HOST+'/api';
+    const time = Math.round(Date.now() / 1000);
+    const expTime = time + 60 * 60;
+    const header = {
+        alg: 'RS256',
+        typ: 'JWT',
+    };
+    const tokenOpts = {
+        ...opts,
+        iss,
+        iat: time,
+        exp: expTime,
+    }
+    const sHeader = JSON.stringify(header);
+    const sData = JSON.stringify(tokenOpts);
+
+    return KJUR.jws.JWS.sign(header.alg, sHeader, sData, privateKey.replace(/\\n/gm, '\n'));
+};
+
+/** Add new User to database
+ *
+ * @param {object} req  - request
+ * @param {object} req.headers - request headers
+ * @param {object} req.body - request body
+ * @param {string} req.body.username - username
+ * @param {string} req.body.password - user password
+ * @param {string} req.body.email - user email
+ * @param {number} [req.body.role] - user role = default 2
+ * @param {object} res - response object
+ * @returns {Promise<*>}
+ */
 const registerUser = async (req, res) => {
     const { username, email, password, role } = req.body;
+    let dbResponse;
 
     if (!(email && password && username)) {
         res.status(400).send({error: 'Please provide username, password and email'});
     }
-    let { rows } = await db.query(
+
+    dbResponse = await db.query(
         'select * from users where email = $1',
         [email]
     );
-    if(rows.length!==0){
-        return res.status(409).send({error:'User Already Exist. Please Login'});
+    if(dbResponse.rows.length!==0){
+        return res.status(409).send({error:'User with that email is already exist. Please Login'});
+    }
+    dbResponse = await db.query(
+        'select * from users where username = $1',
+        [username]
+    );
+    if(dbResponse.rows.length!==0){
+        return res.status(409).send({error:'Username is in use - please choose different'});
     }
     const encryptedPassword = await bcrypt.hash(password, 10);
     const userRole = role===undefined ? 2 :role;
 
     try {
-        const dbResponse = await db.query(
+        dbResponse = await db.query(
             'INSERT INTO users (username, email, password, role) VALUES ($1, $2, $3, $4) RETURNING id',
             [username, email.toLowerCase(), encryptedPassword, userRole]
         );
-        rows = dbResponse.rows[0];
     } catch (err) {
         return res.status(400).send({error:err.detail});
     }
-    const userId = rows.id;
-    const iss = process.env.SCHEME+'://'+process.env.HOST+'/api';
-    const token = jwt.sign({sub: userId, iss}, process.env.PRIVATE_KEY,{expiresIn: '2h'});
+    const userId = dbResponse.rows[0].id;
+
+    const tokenBody = {
+        sub: userId,
+        role:userRole
+    }
+    const token = createToken(tokenBody, process.env.PRIVATE_KEY);
 
     const resp = {
         userId,
@@ -40,11 +84,39 @@ const registerUser = async (req, res) => {
         userRole,
     };
     return res.status(201).send(resp);
-
 };
 
+/**
+ *
+ * @param req
+ * @param {object} req.headers - request headers
+ * @param {object} req.body - request body
+ * @param {string} req.body.username - username
+ * @param {string} req.body.password - password
+ * @param res
+ * @returns {Promise<*>}
+ */
 const login = async (req, res) => {
-    return res.status(300).send('ok');
+    let dbResponse;
+    const {username, password} = req.body;
+    if (!(username && password)) {
+        res.status(400).send({error:'All input is required'});
+    }
+    dbResponse = await db.query(
+        'select * from users where username = $1',
+        [username]
+    );
+    const user = dbResponse.rows[0];
+
+    if(dbResponse.rows.length!==0 &&(await bcrypt.compare(password,user.password))){
+        const tokenBody = {
+            sub: user.id,
+            role:user.role,
+        }
+        user.token = createToken(tokenBody, process.env.PRIVATE_KEY);
+        return res.status(200).send(user);
+    }
+    return res.status(400).send({error:'Invalid Credentials'});
 };
 
 export default {registerUser, login};
