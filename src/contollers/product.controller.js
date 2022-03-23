@@ -15,7 +15,7 @@ const convertArrayToXml = (products) => {
 const objectArrayToXml = (obj) => {
     let xml = '';
     for (let prop in obj) {
-        if (!obj.hasOwnProperty(prop)) {
+        if (!Object.prototype.hasOwnProperty.call(obj,prop)) {
             continue;
         }
         if (obj[prop] === undefined)
@@ -93,7 +93,7 @@ const convertFullProductToXml = (response) =>{
  * @returns {Promise<*>}
  */
 const createProduct = async (req, res) => {
-    console.log(process.env)
+    console.log(process.env);
     const {body} = req;
     const { product_name, quantity, price } = body;
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');

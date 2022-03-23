@@ -7,6 +7,7 @@ import routes from './routes/index.js';
 import swagger from './swagger/index.js';
 import path from 'path';
 import productRoute from './routes/product.routes.js';
+import authRoute from './routes/auth.routes.js';
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -21,6 +22,7 @@ routes.get('/', (req, res)=>{
 });
 
 app.use('/api/product', productRoute);
+app.use('/api/auth', authRoute);
 
 // Error handling
 app.use((req, res) => {
