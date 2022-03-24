@@ -226,7 +226,7 @@ const updateUser = async (req, res) => {
     }
     const roles = ['1','2'];
     if(!roles.includes(role)){
-        return res.status(400).send({error: 'Wrong role id'})
+        return res.status(400).send({error: 'Wrong role id'});
     }
 
     try {
@@ -241,7 +241,7 @@ const updateUser = async (req, res) => {
     } catch (err) {
         return res.status(400).send({error: err.detail});
     }
-    return res.status(200).send({message: `Role ${role} set for user ${userId}`})
+    return res.status(200).send({message: `Role ${role} set for user ${userId}`});
 
 };
 
