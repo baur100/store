@@ -15,14 +15,15 @@ const createToken = (opts, privateKey) => {
         iss,
         iat: time,
         exp: expTime,
-    }
+    };
     const sHeader = JSON.stringify(header);
     const sData = JSON.stringify(tokenOpts);
 
     return KJUR.jws.JWS.sign(header.alg, sHeader, sData, privateKey.replace(/\\n/gm, '\n'));
 };
 
-/** Add new User to database
+/**
+ * Add new User to database
  *
  * @param {object} req  - request
  * @param {object} req.headers - request headers
@@ -72,7 +73,7 @@ const registerUser = async (req, res) => {
     const tokenBody = {
         sub: userId,
         role:userRole
-    }
+    };
     const token = createToken(tokenBody, process.env.PRIVATE_KEY);
 
     const resp = {
@@ -87,6 +88,7 @@ const registerUser = async (req, res) => {
 };
 
 /**
+ * Log user in
  *
  * @param req
  * @param {object} req.headers - request headers
@@ -112,11 +114,135 @@ const login = async (req, res) => {
         const tokenBody = {
             sub: user.id,
             role:user.role,
-        }
+        };
         user.token = createToken(tokenBody, process.env.PRIVATE_KEY);
         return res.status(200).send(user);
     }
     return res.status(400).send({error:'Invalid Credentials'});
 };
 
-export default {registerUser, login};
+/**
+ * Get all users
+ *
+ * @param req
+ * @param {object} req.headers - request headers
+ * @param {object} req.body - request body
+ * @param {string} req.body.username - username
+ * @param {string} req.body.password - password
+ * @param res
+ * @returns {Promise<*>}
+ */
+const getAllUsers = async (req, res) => {
+    const { rows } = await db.query(
+        'select * from users',
+        []
+    );
+    /* eslint-disable no-unused-vars*/
+    const users= rows.map(({password, ...rest}) => rest);
+    return res.status(200).send(users);
+};
+
+/**
+ *
+ * @param req
+ * @param {object} req.headers - request headers
+ * @param {object} req.params - request path params
+ * @param {string} req.params.id - product id - should be number
+ * @param {object} req.body - request body
+ * @param {string} req.body.username - username
+ * @param {string} req.body.password - password
+ * @param res
+ * @returns {Promise<*>}
+ */
+const getUserById = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)){
+        return res.status(400).send({error: 'Wrong id - should be a number'});
+    }
+    const { rows } = await db.query(
+        'select * from users where id = $1',
+        [userId]
+    );
+    if(rows.length===0) {
+        return res.status(404).send({error: `User with id ${userId} not found`});
+    }
+    const user = rows[0];
+    delete user.password;
+    return res.status(200).send(user);
+};
+
+/**
+ * Delete user by id
+ *
+ * @param req
+ * @param {object} req.headers - request headers
+ * @param {object} req.params - request path params
+ * @param {string} req.params.id - product id - should be number
+ * @param {object} req.body - request body
+ * @param {string} req.body.username - username
+ * @param {string} req.body.password - password
+ * @param res
+ * @returns {Promise<*>}
+ */
+const deleteUser = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)){
+        return res.status(400).send({error: 'Wrong id - should be a number'});
+    }
+    const {rowCount} = await db.query(
+        'delete from users where id = $1',
+        [userId]
+    );
+
+    if (rowCount === 0){
+        return res.status(404).send({error: `User with id ${userId} not found`});
+    }
+    return res.status(200).send({message: `User with id ${userId} has been deleted`});
+};
+
+/**
+ * Update user role
+ *
+ * @param req
+ * @param {object} req.headers - request headers
+ * @param {object} req.params - request path params
+ * @param {string} req.params.id - product id - should be number
+ * @param {object} req.body - request body
+ * @param {object} req.body.role - new role
+ * @param res
+ * @returns {Promise<*>}
+ */
+const updateUser = async (req, res) => {
+    const userId = parseInt(req.params.id);
+    if (isNaN(userId)){
+        return res.status(400).send({error: 'Wrong id - should be a number'});
+    }
+    const role = req.body.role;
+    if(role === undefined){
+        return res.status(400).send({error: 'Role is required'});
+    }
+    if (isNaN(role)){
+        return res.status(400).send({error: 'Role should be a number'});
+    }
+    const roles = ['1','2'];
+    if(!roles.includes(role)){
+        return res.status(400).send({error: 'Wrong role id'})
+    }
+
+    try {
+        const dbResponse  = await db.query(
+            'UPDATE users SET role = $1 WHERE id = $2;',
+            [role, userId]
+        );
+        const rowCount = dbResponse.rowCount;
+        if(rowCount===0){
+            return res.status(404).send({error: `User with id ${userId} not found`});
+        }
+    } catch (err) {
+        return res.status(400).send({error: err.detail});
+    }
+    return res.status(200).send({message: `Role ${role} set for user ${userId}`})
+
+};
+
+export default {registerUser, login,getAllUsers,getUserById,deleteUser,updateUser};
