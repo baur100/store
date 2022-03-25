@@ -4,10 +4,10 @@ import authController from '../contollers/auth.controller.js';
 
 router.post('/register',authController.registerUser);
 router.post('/login',authController.login);
-router.get('/users',authController.getAllUsers);
-router.get('/user/:id', authController.getUserById);
-router.delete('/user/:id',authController.deleteUser);
-router.patch('/user/:id',authController.updateUser);
+router.get('/',authController.getAllUsers);
+router.get('/:id', authController.getUserById);
+router.delete('/:id',authController.deleteUser);
+router.patch('/:id',authController.updateUser);
 
 
 export default router;
