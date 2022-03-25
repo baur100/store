@@ -118,7 +118,7 @@ const login = async (req, res) => {
         user.token = createToken(tokenBody, process.env.PRIVATE_KEY);
         return res.status(200).send(user);
     }
-    return res.status(400).send({error:'Invalid Credentials'});
+    return res.status(401).send({error:'Invalid Credentials'});
 };
 
 /**

@@ -22,7 +22,7 @@ routes.get('/', (req, res)=>{
 });
 
 app.use('/api/product', productRoute);
-app.use('/api/auth', authRoute);
+app.use('/api/user', authRoute);
 
 // Error handling
 app.use((req, res) => {

@@ -1,0 +1,639 @@
+openapi: 3.0.3
+info:
+  title: API School
+  description: API School
+  version: 1.0.0
+servers:
+  - url: '{url}'
+    description: 'OpenAPI Documentation'
+paths:
+  /product:
+    post:
+      tags:
+        - product
+      operationId: createProduct
+      summary: 'Add new product'
+      description: 'Create new Product'
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: 'Add new product object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createProduct'
+      responses:
+        201:
+          description: 'Product added'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        400:
+          description: 'Bad request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        403:
+          description: 'User does not have proper permission'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'A token is required for authentication'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    get:
+      tags:
+        - product
+      summary: 'Get all products'
+      operationId: getAllProducts
+      description: 'Retrieve all products'
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: 'returns array of products'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+                xml:
+                  name: 'product'
+                  wrapped: true
+        401:
+          description: 'Invalid token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /product/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: number
+          format: int32
+        required: true
+    get:
+      tags:
+        - product
+      summary: 'Get product by id'
+      description: 'Get Product by product id'
+      security:
+        - bearerAuth: []
+      operationId: getProductById
+      responses:
+        200:
+          description: 'Product returned'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong product id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'Invalid token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+        - product
+      summary: 'Delete product'
+      description: 'Delete product by product id'
+      security:
+        - bearerAuth: []
+      operationId: deleteProductById
+      responses:
+        200:
+          description: 'Product deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/message'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        403:
+          description: 'User does not have proper permission'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'A token is required for authentication'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong product id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+    patch:
+      tags:
+        - product
+      summary: 'Patch product'
+      description: 'Update product price or/and quantity'
+      security:
+        - bearerAuth: []
+      operationId: patchProductById
+      requestBody:
+        description: 'Patch price or/and quantity product'
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                price:
+                  type: number
+                  format: double
+                  example: 2.15
+                quantity:
+                  type: number
+                  format: int32
+                  example: 3
+      responses:
+        200:
+          description: 'Product added'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        403:
+          description: 'User does not have proper permission'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'A token is required for authentication'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong product id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+    put:
+      tags:
+        - product
+      summary: 'Update product'
+      description: 'Update product'
+      security:
+        - bearerAuth: []
+      operationId: updateProductById
+      requestBody:
+        description: 'Update product object'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createProduct'
+      responses:
+        200:
+          description: 'Product updated'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/product'
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        403:
+          description: 'User does not have proper permission'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'A token is required for authentication'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong product id'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+  /product/search:
+    get:
+      tags:
+        - product
+
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: true
+      summary: 'Search by product name'
+      operationId: searchByProductName
+      description: 'Search products by product name'
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: 'returns array of products'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/product'
+                xml:
+                  name: 'product'
+                  wrapped: true
+        404:
+          description: 'Product not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'Invalid token'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /user/register:
+    post:
+      tags:
+        - user
+      operationId: registerUser
+      summary: 'Create new user'
+      description: 'Create new user'
+      requestBody:
+        description: 'Create user'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+      responses:
+        201:
+          description: 'User created'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullUser'
+        400:
+          description: 'Some properties not passed in'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        409:
+          description: 'Username or email already in use'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /user/login:
+    post:
+      tags:
+        - user
+      operationId: login
+      summary: 'Log in'
+      description: 'Login to app'
+      requestBody:
+        description: 'Credentials'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/credentials'
+      responses:
+        200:
+          description: 'Logged in'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/fullUser'
+        400:
+          description: 'Some properties not passed in'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        401:
+          description: 'invalid credentials'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /user/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: number
+          format: int32
+        required: true
+    get:
+      tags:
+        - user
+      operationId: getUserById
+      summary: 'Get user'
+      description: 'Get user by id'
+      responses:
+        200:
+          description: 'User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong parameter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+    delete:
+      tags:
+        - user
+      operationId: deleteUser
+      summary: 'Delete user by id'
+      description: 'Delete user'
+      responses:
+        200:
+          description: 'User deleted'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong parameter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+
+    patch:
+      tags:
+        - user
+      operationId: updateUser
+      summary: 'Get user'
+      description: 'Get user by id'
+      requestBody:
+        description: 'Update user role'
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: number
+                  format: double
+                  example: 2.15
+      responses:
+        200:
+          description: 'User'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/message'
+        404:
+          description: 'User not found'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+        400:
+          description: 'Wrong parameter'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+  /user:
+    get:
+      tags:
+        - user
+      operationId: getAllUsers
+      summary: 'Get All users'
+      description: 'Get All users'
+      responses:
+        200:
+          description: 'List of all users'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/user'
+components:
+  schemas:
+    createProduct:
+      type: object
+      required: name, quantity, price
+      properties:
+        name:
+          type: string
+          example: 'Cane Sugar'
+        quantity:
+          type: number
+          format: int32
+          example: 8
+        price:
+          type: number
+          format: double
+          example: 2.12
+    product:
+      type: object
+      required: name, quantity, price
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: 'Cane Sugar'
+        quantity:
+          type: number
+          format: int32
+          example: 8
+        price:
+          type: number
+          format: double
+          example: 2.12
+    createUser:
+      type: object
+      required: username, email, password
+      properties:
+        username:
+          type: string
+          example: 'Super.Bug'
+        email:
+          type: string
+          example: 'some@email.com'
+        password:
+          type: string
+          example: 'password'
+    fullUser:
+      type: object
+      properties:
+        userId:
+          type: number
+          format: int32
+          example: 12
+        username:
+          type: string
+          example: 'Super.Bug'
+        email:
+          type: string
+          example: 'some@email.com'
+        password:
+          type: string
+          example: '$2a$10$kwgh9tr96dO3TaWsfhaaK.A1sj1L6MsOnUJTW41w'
+        token:
+          type: string
+          example: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQ3LCJ'
+        userRole:
+          type: number
+          format: int32
+          example: 2
+    user:
+      type: object
+      properties:
+        id:
+          type: number
+          format: int32
+          example: 12
+        username:
+          type: string
+          example: 'Super.Bug'
+        email:
+          type: string
+          example: 'some@email.com'
+        role:
+          type: number
+          format: int32
+          example: 2
+    credentials:
+      type: object
+      required: username, password
+      properties:
+        username:
+          type: string
+          example: 'Super.Bug'
+        password:
+          type: string
+          example: 'password'
+    error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: 'error happens'
+    message:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'operation result'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

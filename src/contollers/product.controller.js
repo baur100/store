@@ -51,14 +51,22 @@ const objectArrayToXml = (obj) => {
     return xml;
 };
 const convertOutput = (rows) => {
-    return rows.map((product)=>{
-        return {
-            id: product.productid,
-            product_name: product.productname,
-            quantity: product.quantity,
-            price: Number(product.price).toFixed(2)
-        };
-    });
+    if (Array.isArray(rows)){
+        return rows.map((product)=>{
+            return {
+                id: product.id,
+                name: product.name,
+                quantity: product.quantity,
+                price: Number(Number(product.price).toFixed(2))
+            };
+        });
+    }
+    return {
+        id: rows.id,
+        name: rows.name,
+        quantity: rows.quantity,
+        price:Number(Number(rows.price).toFixed(2))
+    };
 };
 const convertProductToXml = (product) =>{
     const obj = {product};
@@ -75,11 +83,6 @@ const convertErrorToXml = (error) =>{
     const builder = new parser.Builder();
     return builder.buildObject(obj);
 };
-const convertFullProductToXml = (response) =>{
-    const obj = {response};
-    const builder = new parser.Builder();
-    return builder.buildObject(obj);
-};
 
 /** Add new Product to database
  *
@@ -88,7 +91,7 @@ const convertFullProductToXml = (response) =>{
  * @param {object} req.body - request body
  * @param {string} req.body.product_name - product name
  * @param {string} req.body.quantity - product quantity
- * @param {string} req.body.price - product price
+ * @param {number} req.body.price - product price
  * @param {object} req.user - token info
  * @param {number} req.user.role - user role
  * @param {number} req.user.sub - user id
@@ -100,13 +103,13 @@ const createProduct = async (req, res) => {
     const {body} = req;
     if(req.user.role!==1){
         resp = {error: `userId = ${req.user.sub}  has no permissions to add product`};
-        error = isXmlResponse ? convertErrorToXml(resp) : resp;
+        error = resp;
         return res.status(403).send(error);
     }
-    const { product_name, quantity, price } = body;
+    const { name, quantity, price } = body;
 
-    if (product_name ===undefined || quantity ===undefined || price ===undefined){
-        resp = {error: 'product_name, quantity, price are required'};
+    if (name ===undefined || quantity ===undefined || price ===undefined){
+        resp = {error: 'name, quantity, price are required'};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(400).send(error);
     }
@@ -114,8 +117,8 @@ const createProduct = async (req, res) => {
     let rows;
     try {
         const dbResponse = await db.query(
-            'INSERT INTO products (productname, quantity, price) VALUES ($1, $2, $3) RETURNING productId',
-            [product_name, quantity, price]
+            'INSERT INTO products (name, quantity, price) VALUES ($1, $2, $3) RETURNING id',
+            [name, quantity, price]
         );
         rows = dbResponse.rows;
     } catch (err) {
@@ -124,18 +127,15 @@ const createProduct = async (req, res) => {
         return res.status(400).send(error);
     }
     resp = {
-        message: 'Product added successfully!',
-        product: {
-            productId: rows[0].productid,
-            product_name,
-            quantity,
-            price:price.toFixed(2),
-        },
+        id: rows[0].id,
+        name,
+        quantity,
+        price,
     };
-    const productResp = isXmlResponse ? convertFullProductToXml(resp) : resp;
-
+    const productResp = isXmlResponse ? convertProductToXml(resp) : resp;
     return res.status(201).send(productResp);
 };
+
 
 /**
  * Get Product by product id
@@ -149,22 +149,21 @@ const createProduct = async (req, res) => {
  */
 const getProductById = async (req, res) => {
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
-    const productId = parseInt(req.params.id);
-    if (isNaN(productId)){
+    const id = parseInt(req.params.id);
+    if (isNaN(id)){
         resp =  {error: 'Wrong id - should be a number'};
         error = isXmlResponse ? convertErrorToXml(resp) :resp;
         return res.status(400).send(error);
     }
     const { rows } = await db.query(
-        'select * from products where productId = $1',
-        [productId]
+        'select * from products where id = $1',
+        [id]
     );
     if(rows.length===0) {
-        resp = {error: `Product with id ${productId} not found`};
+        resp = {error: `Product with id ${id} not found`};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(404).send(error);
     }
-
     resp = convertOutput(rows)[0];
     const productResp = isXmlResponse ? convertProductToXml(resp) : resp;
     return res.status(200).send(productResp);
@@ -187,26 +186,26 @@ const deleteProductById = async (req, res) => {
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
     if(req.user.role!==1){
         resp = {error: `userId = ${req.user.sub}  has no permissions to delete product`};
-        error = isXmlResponse ? convertErrorToXml(resp) : resp;
+        error = resp;
         return res.status(403).send(error);
     }
-    const productId = parseInt(req.params.id);
-    if (isNaN(productId)){
+    const id = parseInt(req.params.id);
+    if (isNaN(id)){
         resp = {error: 'Wrong id - should be a number'};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(400).send(error);
     }
     const {rowCount} = await db.query(
-        'delete from products where productid = $1',
-        [productId]
+        'delete from products where id = $1',
+        [id]
     );
 
     if (rowCount === 0){
-        resp = {error: `Product with id ${productId} not found`};
+        resp = {error: `Product with id ${id} not found`};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(404).send(error);
     }
-    resp = {message: `Product with id ${productId} has been deleted`};
+    resp = {message: `Product with id ${id} has been deleted`};
     message = isXmlResponse ? convertMessageToXml(resp) : resp;
     return res.status(200).send(message);
 };
@@ -219,7 +218,7 @@ const deleteProductById = async (req, res) => {
  * @param {object} req.params - request path params
  * @param {string} req.params.id - product id - should be number
  * @param {string} req.body.quantity - product quantity
- * @param {string} req.body.price - product price
+ * @param {number} req.body.price - product price
  * @param {object} req.user - token info
  * @param {number} req.user.role - user role
  * @param {number} req.user.sub - user id
@@ -230,14 +229,15 @@ const patchProductById = async (req, res) => {
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
     if(req.user.role!==1){
         resp = {error: `userId = ${req.user.sub}  has no permissions to patch product`};
-        error = isXmlResponse ? convertErrorToXml(resp) : resp;
+        error = resp;
         return res.status(403).send(error);
     }
-    const productId = parseInt(req.params.id);
+    const id = parseInt(req.params.id);
     let rowCount=0;
     let quantity;
     let price;
-    if (isNaN(productId)){
+    let dbResponse;
+    if (isNaN(id)){
         resp = {error: 'Wrong id - should be a number'};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(400).send(error);
@@ -257,9 +257,9 @@ const patchProductById = async (req, res) => {
             return res.status(400).send(error);
         }
         try {
-            const dbResponse  = await db.query(
-                'UPDATE products SET quantity = $1 WHERE productid = $2;',
-                [quantity, productId]
+            dbResponse  = await db.query(
+                'UPDATE products SET quantity = $1 WHERE id = $2 RETURNING name;',
+                [quantity, id]
             );
             rowCount = dbResponse.rowCount;
         } catch (err) {
@@ -277,9 +277,9 @@ const patchProductById = async (req, res) => {
             return res.status(400).send(error);
         }
         try {
-            const dbResponse  = await db.query(
-                'UPDATE products SET price = $1 WHERE productid = $2;',
-                [price, productId]
+            dbResponse  = await db.query(
+                'UPDATE products SET price = $1 WHERE id = $2 RETURNING name;',
+                [price, id]
             );
             rowCount = dbResponse.rowCount;
         } catch (err) {
@@ -290,19 +290,18 @@ const patchProductById = async (req, res) => {
     }
 
     if (rowCount === 0){
-        resp = {error: `Product with id ${productId} not found`};
+        resp = {error: `Product with id ${id} not found`};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(404).send(error);
     }
-    resp = {
-        message: `Product with id ${productId} has been updated`,
-        product: {
-            productId,
-            quantity,
-            price,
-        },
+    const respObj = {
+        name: dbResponse.rows[0].name,
+        id,
+        quantity,
+        price,
     };
-    const productResp = isXmlResponse ? convertFullProductToXml(resp) :resp;
+    resp = convertOutput(respObj);
+    const productResp = isXmlResponse ? convertProductToXml(resp) :resp;
     return res.status(200).send(productResp);
 };
 
@@ -315,8 +314,8 @@ const patchProductById = async (req, res) => {
  * @param {string} req.params.id - product id - should be number
  * @param {object} req.body - request body
  * @param {string} req.body.product_name - product name
- * @param {string} req.body.quantity - product quantity
- * @param {string} req.body.price - product price
+ * @param {number} req.body.quantity - product quantity
+ * @param {number} req.body.price - product price
  * @param {object} req.user - token info
  * @param {number} req.user.role - user role
  * @param {number} req.user.sub - user id
@@ -331,23 +330,23 @@ const updateProductById = async (req, res) => {
     }
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
     const {body} = req;
-    const { product_name, quantity, price } = body;
-    const productId = parseInt(req.params.id);
-    if (isNaN(productId)){
+    const { name, quantity, price } = body;
+    const id = parseInt(req.params.id);
+    if (isNaN(id)){
         resp = {error: 'Wrong id - should be a number'};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(400).send(error);
     }
-    if (product_name ===undefined || quantity ===undefined || price ===undefined){
-        resp = {error: 'product_name, quantity, price are required'};
+    if (name ===undefined || quantity ===undefined || price ===undefined){
+        resp = {error: 'name, quantity, price are required'};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(400).send(error);
     }
     let rowCount;
     try {
         const dbResponse  = await db.query(
-            'UPDATE products SET productname = $1, quantity = $2, price = $3 WHERE productid = $4;',
-            [product_name, quantity, price.toFixed(2),productId]
+            'UPDATE products SET name = $1, quantity = $2, price = $3 WHERE id = $4;',
+            [name, quantity, price.toFixed(2),id]
         );
         rowCount = dbResponse.rowCount;
     } catch (err) {
@@ -357,22 +356,21 @@ const updateProductById = async (req, res) => {
     }
 
     if (rowCount === 0){
-        resp = {error: `Product with id ${productId} not found`};
+        resp = {error: `Product with id ${id} not found`};
         error = isXmlResponse ? convertErrorToXml(resp) : resp;
         return res.status(404).send(error);
     }
-    resp = {
-        message: `Product with id ${productId} has been updated`,
-        product: {
-            productId,
-            product_name,
-            quantity: Number(quantity),
-            price: Number(price).toFixed(2),
-        },
+    const respObj = {
+        id,
+        name,
+        quantity: Number(quantity),
+        price: Number(price).toFixed(2),
     };
-    const productResponse = isXmlResponse ? convertFullProductToXml(resp) :resp;
+    resp = convertOutput(respObj);
+    const productResponse = isXmlResponse ? convertProductToXml(resp) :resp;
     return res.status(200).send(productResponse);
 };
+
 
 /**
  * Get Product by product name
@@ -389,8 +387,8 @@ const searchByProductName = async (req, res) => {
     const name = req.query.name.trim();
 
     const { rows } = await db.query(
-        'select * from products where productname = $1',
-        [name]
+        'select * from products where lower(name) = $1',
+        [name.toLowerCase()]
     );
     if(rows.length===0) {
         resp = {error: `Product with name =  ${name} not found`};
@@ -401,6 +399,7 @@ const searchByProductName = async (req, res) => {
     const productResp = isXmlResponse ? convertArrayToXml(resp) : resp;
     return res.status(200).send(productResp);
 };
+
 
 /**
  * Get All Products

@@ -26,7 +26,7 @@ const verifyToken = (req, res, next) => {
             return res.status(400).send({error:'Invalid Token'});
         }
     } else {
-        return res.status(403).send({message:'A token is required for authentication'});
+        return res.status(401).send({message:'A token is required for authentication'});
     }
     return next();
 };
