@@ -7,7 +7,7 @@ heroku login
 
 Push and build on heroku side - 
 ```
-git push heroku
+git push heroku main
 ```
 
 
