@@ -1,15 +1,15 @@
 # store
 
-
-Push and build on heroku side - 
-```
-push to heroku and build
-```
-
 login to heroku
 ```shell
 heroku login
 ```
+
+Push and build on heroku side - 
+```
+git push heroku
+```
+
 
 set environmental variables
 ```shell
