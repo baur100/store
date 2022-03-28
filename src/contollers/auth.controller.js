@@ -38,9 +38,8 @@ const createToken = (opts, privateKey) => {
 const registerUser = async (req, res) => {
     const { username, email, password, role } = req.body;
     let dbResponse;
-
     if (!(email && password && username)) {
-        res.status(400).send({error: 'Please provide username, password and email'});
+        return res.status(400).send({error: 'Please provide username, password and email'});
     }
 
     dbResponse = await db.query(
@@ -245,4 +244,4 @@ const updateUser = async (req, res) => {
 
 };
 
-export default {registerUser, login,getAllUsers,getUserById,deleteUser,updateUser};
+export default {createToken, registerUser, login,getAllUsers,getUserById,deleteUser,updateUser};

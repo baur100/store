@@ -101,11 +101,6 @@ const convertErrorToXml = (error) =>{
 const createProduct = async (req, res) => {
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
     const {body} = req;
-    if(req.user.role!==1){
-        resp = {error: `userId = ${req.user.sub}  has no permissions to add product`};
-        error = resp;
-        return res.status(403).send(error);
-    }
     const { name, quantity, price } = body;
 
     if (name ===undefined || quantity ===undefined || price ===undefined){
@@ -184,11 +179,6 @@ const getProductById = async (req, res) => {
  */
 const deleteProductById = async (req, res) => {
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
-    if(req.user.role!==1){
-        resp = {error: `userId = ${req.user.sub}  has no permissions to delete product`};
-        error = resp;
-        return res.status(403).send(error);
-    }
     const id = parseInt(req.params.id);
     if (isNaN(id)){
         resp = {error: 'Wrong id - should be a number'};
@@ -227,11 +217,6 @@ const deleteProductById = async (req, res) => {
  */
 const patchProductById = async (req, res) => {
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
-    if(req.user.role!==1){
-        resp = {error: `userId = ${req.user.sub}  has no permissions to patch product`};
-        error = resp;
-        return res.status(403).send(error);
-    }
     const id = parseInt(req.params.id);
     let rowCount=0;
     let quantity;
@@ -323,11 +308,6 @@ const patchProductById = async (req, res) => {
  * @returns {Promise<*>}
  */
 const updateProductById = async (req, res) => {
-    if(req.user.role!==1){
-        resp = {error: `userId = ${req.user.sub}  has no permissions to update product`};
-        error = isXmlResponse ? convertErrorToXml(resp) : resp;
-        return res.status(403).send(error);
-    }
     const isXmlResponse = req.headers['accept'].split('/')[1].includes('xml');
     const {body} = req;
     const { name, quantity, price } = body;
