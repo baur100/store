@@ -101,7 +101,7 @@ const login = async (req, res) => {
     let dbResponse;
     const {username, password} = req.body;
     if (!(username && password)) {
-        res.status(400).send({error:'All input is required'});
+        return res.status(400).send({error:'All input is required'});
     }
     dbResponse = await db.query(
         'select * from users where username = $1',

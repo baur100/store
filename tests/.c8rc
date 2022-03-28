@@ -4,11 +4,11 @@
       ".js"
     ],
     "include": [
-      "src/**/*"
+      "src"
     ],
     "check-coverage": true,
     "reporter": [
       "lcov",
-      "text-summary"
+      "text-summary",
     ]
   }
