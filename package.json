@@ -30,6 +30,7 @@
     "eslint-friendly-formatter": "^3.0.0",
     "eslint-plugin-import": "^2.25.4",
     "husky": "^7.0.4",
+    "karma-chai": "^0.1.0",
     "mocha": "^9.2.2",
     "mocha-multi-reporters": "^1.5.1",
     "nodemon": "^2.0.15",
