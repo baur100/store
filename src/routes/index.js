@@ -2,12 +2,13 @@ import express from 'express';
 
 const router = express.Router();
 
-router.get('/api', (req, res) => {
-    res.status(200).send({
+export const rootHandler = (req,res) => {
+    return res.status(200).send({
         success: 'true',
-        message: 'Run testing app',
+        message: 'Server alive! please use /api-docs',
         version: '1.0.0',
     });
-});
+}
 
-export default router;
+
+export default router.get('/api', rootHandler);
