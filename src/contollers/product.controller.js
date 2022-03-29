@@ -400,4 +400,12 @@ const getAllProducts = async (req, res) => {
     return res.status(200).send(productResp);
 };
 
-export default {createProduct, getProductById, deleteProductById, patchProductById,updateProductById,searchByProductName,getAllProducts};
+export default {
+    createProduct,
+    getProductById,
+    deleteProductById,
+    patchProductById,
+    updateProductById,
+    searchByProductName,
+    getAllProducts
+};

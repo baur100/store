@@ -11,7 +11,7 @@ describe('test auth routes',()=>{
             { path: '/:id', method: 'get' },
             { path: '/:id', method: 'delete' },
             { path: '/:id', method: 'patch' },
-        ]
+        ];
 
         routes.forEach((route) => {
             const match = router.stack.find(
@@ -19,6 +19,6 @@ describe('test auth routes',()=>{
             );
             expect(match).not.be.undefined;
         });
-    })
+    });
 });
 

@@ -3,7 +3,7 @@ import authController from '../../../src/contollers/auth.controller.js';
 import * as chai from 'chai';
 import sinonChai from 'sinon-chai';
 import db from '../../../src/config/database.js';
-import bcrypt from "bcryptjs";
+import bcrypt from 'bcryptjs';
 const expect = chai.expect;
 chai.use(sinonChai);
 
@@ -77,7 +77,7 @@ describe('#registerUser',()=>{
             send: sendStub,
             status: statusStub,
         };
-        const dbQueryStub = sandbox.stub(db,'query')
+        const dbQueryStub = sandbox.stub(db,'query');
         dbQueryStub.onCall(0).resolves({rows:[]});
         dbQueryStub.onCall(1).resolves({rows:[{ some: 'object' }]});
 
@@ -103,10 +103,10 @@ describe('#registerUser',()=>{
             send: sendStub,
             status: statusStub,
         };
-        const dbQueryStub = sandbox.stub(db,'query')
+        const dbQueryStub = sandbox.stub(db,'query');
         dbQueryStub.onCall(0).resolves({rows:[]});
         dbQueryStub.onCall(1).resolves({rows:[]});
-        dbQueryStub.onCall(2).throws({detail: 'problems...'})
+        dbQueryStub.onCall(2).throws({detail: 'problems...'});
 
         const result = await authController.registerUser(req,res);
 
@@ -129,7 +129,7 @@ describe('#registerUser',()=>{
             token: '1/token',
             password: 'encryptedPassword',
             userRole: 1
-        }
+        };
 
         const sendStub = sandbox.stub().resolves(userResponse);
         const statusStub = sandbox.stub().returns;
@@ -138,22 +138,22 @@ describe('#registerUser',()=>{
             send: sendStub,
             status: statusStub,
         };
-        const dbQueryStub = sandbox.stub(db,'query')
+        const dbQueryStub = sandbox.stub(db,'query');
         dbQueryStub.onCall(0).resolves({rows:[]});
         dbQueryStub.onCall(1).resolves({rows:[]});
-        dbQueryStub.onCall(2).resolves({rows:[{id:1}]})
+        dbQueryStub.onCall(2).resolves({rows:[{id:1}]});
 
         const result = await authController.registerUser(req,res);
 
         expect(result).to.eql({
-                userId: 12,
-                username: 'xx',
-                email: 'email123',
-                token: '1/token',
-                password: 'encryptedPassword',
-                userRole: 1
-            }
-        )
+            userId: 12,
+            username: 'xx',
+            email: 'email123',
+            token: '1/token',
+            password: 'encryptedPassword',
+            userRole: 1
+        }
+        );
         expect(result.error).to.be.undefined;
         expect(dbQueryStub).to.be.calledThrice;
         expect(sendStub).to.be.calledOnce;
@@ -263,7 +263,7 @@ describe('#getAllUsers',()=>{
         const dbQueryStub = sandbox.stub(db,'query').resolves({rows:[{ some: 'object' }]});
         const result = await authController.getAllUsers(req,res);
 
-        expect(result).to.be.an('array')
+        expect(result).to.be.an('array');
         expect(result).to.be.eql([{user: 'me the user'}]);
         expect(dbQueryStub).to.be.calledOnce;
         expect(sendStub).to.be.calledOnce;
@@ -274,7 +274,6 @@ describe('#getAllUsers',()=>{
 describe('#getUserById ',()=>{
     let sandbox;
     let res;
-    let req;
     beforeEach(() => {
         sandbox = sinon.createSandbox();
     });
@@ -288,7 +287,7 @@ describe('#getUserById ',()=>{
             params: {
                 id: 'xx'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -306,7 +305,7 @@ describe('#getUserById ',()=>{
             params: {
                 id: 12
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -326,7 +325,7 @@ describe('#getUserById ',()=>{
             params: {
                 id: 12
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -343,7 +342,6 @@ describe('#getUserById ',()=>{
 describe('#deleteUser',()=>{
     let sandbox;
     let res;
-    let req;
     beforeEach(() => {
         sandbox = sinon.createSandbox();
     });
@@ -357,7 +355,7 @@ describe('#deleteUser',()=>{
             params: {
                 id: 'xx'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -375,7 +373,7 @@ describe('#deleteUser',()=>{
             params: {
                 id: 12
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -395,7 +393,7 @@ describe('#deleteUser',()=>{
             params: {
                 id: 12
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -412,7 +410,6 @@ describe('#deleteUser',()=>{
 describe('#updateUser',()=>{
     let sandbox;
     let res;
-    let req;
     beforeEach(() => {
         sandbox = sinon.createSandbox();
     });
@@ -426,7 +423,7 @@ describe('#updateUser',()=>{
             params: {
                 id: 'xx'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -445,7 +442,7 @@ describe('#updateUser',()=>{
                 id: 12
             },
             body: {}
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -466,7 +463,7 @@ describe('#updateUser',()=>{
             body: {
                 role: 'xx'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -487,7 +484,7 @@ describe('#updateUser',()=>{
             body: {
                 role: '25'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -508,7 +505,7 @@ describe('#updateUser',()=>{
             body: {
                 role: '2'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -531,7 +528,7 @@ describe('#updateUser',()=>{
             body: {
                 role: '2'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,
@@ -554,7 +551,7 @@ describe('#updateUser',()=>{
             body: {
                 role: '2'
             }
-        }
+        };
         res = {
             send: sendStub,
             status: statusStub,

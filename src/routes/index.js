@@ -8,7 +8,7 @@ export const rootHandler = (req,res) => {
         message: 'Server alive! please use /api-docs',
         version: '1.0.0',
     });
-}
+};
 
 
 export default router.get('/api', rootHandler);

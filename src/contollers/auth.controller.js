@@ -244,4 +244,12 @@ const updateUser = async (req, res) => {
 
 };
 
-export default {createToken, registerUser, login,getAllUsers,getUserById,deleteUser,updateUser};
+export default {
+    createToken,
+    registerUser,
+    login,
+    getAllUsers,
+    getUserById,
+    deleteUser,
+    updateUser
+};

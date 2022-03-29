@@ -12,7 +12,7 @@ describe('test product routes',()=>{
             { path: '/:id', method: 'delete' },
             { path: '/:id', method: 'patch' },
             { path: '/:id', method: 'patch' },
-        ]
+        ];
 
         routes.forEach((route) => {
             const match = router.stack.find(
@@ -20,6 +20,6 @@ describe('test product routes',()=>{
             );
             expect(match).not.be.undefined;
         });
-    })
+    });
 });
 
